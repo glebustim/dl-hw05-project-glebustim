@@ -1,0 +1,30 @@
+ADMM-100:
+    test_MSEMetric : 0.14736229414741198
+    test_LPIPSMetric: 0.7562845559120178
+    test_PSNRMetric: 8.5087777150472
+    test_SSIMMetric: 0.19745457289616267
+    time: 12:08
+LeADMM-20:
+    test_MSEMetric : 0.08432519758741061
+    test_LPIPSMetric: 0.807038092772166
+    test_PSNRMetric: 10.923962838490803
+    test_SSIMMetric: 0.34109743090470634
+    time: 06:24
+Modular LeADMM-5 Pre+Post:
+    test_MSEMetric : 0.04477920962870121
+    test_LPIPSMetric: 0.7869748767217001
+    test_PSNRMetric: 13.635877011617024
+    test_SSIMMetric: 0.38533933146794636
+    time: 06:21
+Modular LeADMM Pre:
+    test_MSEMetric : 0.03955100352068742
+    test_LPIPSMetric: 0.7935606174468994
+    test_PSNRMetric: 14.176533073425293
+    test_SSIMMetric: 0.36914470775922137
+    time: 05:42
+Modular LeADMM Post:
+    test_MSEMetric : 0.03560573425889015
+    test_LPIPSMetric: 0.726288925965627
+    test_PSNRMetric: 14.6475591506958
+    test_SSIMMetric: 0.4128587760130564
+    time: 05:32
