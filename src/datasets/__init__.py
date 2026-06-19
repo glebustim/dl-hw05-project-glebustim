@@ -1,1 +1,3 @@
-from src.datasets.example import ExampleDataset
+from src.datasets.digicam import DigicamDataset
+
+__all__ = ["DigicamDataset"]

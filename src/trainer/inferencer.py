@@ -1,4 +1,5 @@
 import torch
+import torchvision.utils as vutils
 from tqdm.auto import tqdm
 
 from src.metrics.tracker import MetricTracker
@@ -119,38 +120,60 @@ class Inferencer(BaseTrainer):
         batch = self.move_batch_to_device(batch)
         batch = self.transform_batch(batch)  # transform batch on device -- faster
 
-        outputs = self.model(**batch)
-        batch.update(outputs)
+        reconstruction = self.model(batch["lensless"], batch["mask"])
+        batch["reconstruction"] = reconstruction
 
         if metrics is not None:
             for met in self.metrics["inference"]:
                 metrics.update(met.name, met(**batch))
 
-        # Some saving logic. This is an example
-        # Use if you need to save predictions on disk
+        if self.save_path is not None:
+            batch_size = batch["reconstruction"].shape[0]
+            save_dir = self.save_path / part
+            save_dir.mkdir(exist_ok=True, parents=True)
 
-        batch_size = batch["logits"].shape[0]
-        current_id = batch_idx * batch_size
-
-        for i in range(batch_size):
-            # clone because of
-            # https://github.com/pytorch/pytorch/issues/1995
-            logits = batch["logits"][i].clone()
-            label = batch["labels"][i].clone()
-            pred_label = logits.argmax(dim=-1)
-
-            output_id = current_id + i
-
-            output = {
-                "pred_label": pred_label,
-                "label": label,
-            }
-
-            if self.save_path is not None:
-                # you can use safetensors or other lib here
-                torch.save(output, self.save_path / part / f"output_{output_id}.pth")
+            for i in range(batch_size):
+                image_id = batch["image_id"][i]
+                recon_img = batch["reconstruction"][i].detach().cpu()
+                if "lensed" in batch:
+                    target_img = batch["lensed"][i].detach().cpu()
+                    recon_img = self._crop_reconstruction_for_saving(
+                        recon_img,
+                        target_img,
+                    )
+                recon_img = torch.clamp(recon_img, 0.0, 1.0)
+                vutils.save_image(recon_img, save_dir / f"{image_id}.png")
 
         return batch
+
+    @staticmethod
+    def _crop_reconstruction_for_saving(image, target):
+        crop_height, crop_width = Inferencer._target_crop_size(target)
+        return Inferencer._center_crop(image, crop_height, crop_width)
+
+    @staticmethod
+    def _target_crop_size(target):
+        content_mask = target.abs().sum(dim=0) > 0
+        if content_mask.any():
+            content_coords = content_mask.nonzero()
+            top = content_coords[:, 0].min().item()
+            bottom = content_coords[:, 0].max().item()
+            left = content_coords[:, 1].min().item()
+            right = content_coords[:, 1].max().item()
+            return bottom - top + 1, right - left + 1
+
+        return target.shape[-2:]
+
+    @staticmethod
+    def _center_crop(image, crop_height, crop_width):
+        image_height, image_width = image.shape[-2:]
+        crop_top = (image_height - crop_height) // 2
+        crop_left = (image_width - crop_width) // 2
+        return image[
+            ...,
+            crop_top:crop_top + crop_height,
+            crop_left:crop_left + crop_width,
+        ]
 
     def _inference_part(self, part, dataloader):
         """
@@ -162,7 +185,6 @@ class Inferencer(BaseTrainer):
         Returns:
             logs (dict): metrics, calculated on the partition.
         """
-
         self.is_train = False
         self.model.eval()
 

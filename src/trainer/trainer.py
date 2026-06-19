@@ -1,3 +1,4 @@
+import torch
 from src.metrics.tracker import MetricTracker
 from src.trainer.base_trainer import BaseTrainer
 
@@ -34,8 +35,8 @@ class Trainer(BaseTrainer):
             metric_funcs = self.metrics["train"]
             self.optimizer.zero_grad()
 
-        outputs = self.model(**batch)
-        batch.update(outputs)
+        reconstruction = self.model(batch["lensless"], batch["mask"])
+        batch["reconstruction"] = reconstruction
 
         all_losses = self.criterion(**batch)
         batch.update(all_losses)
@@ -51,8 +52,13 @@ class Trainer(BaseTrainer):
         for loss_name in self.config.writer.loss_names:
             metrics.update(loss_name, batch[loss_name].item())
 
-        for met in metric_funcs:
-            metrics.update(met.name, met(**batch))
+        with torch.no_grad():
+            metric_batch = {
+                key: value.detach() if torch.is_tensor(value) else value
+                for key, value in batch.items()
+            }
+            for met in metric_funcs:
+                metrics.update(met.name, met(**metric_batch))
         return batch
 
     def _log_batch(self, batch_idx, batch, mode="train"):
@@ -67,13 +73,14 @@ class Trainer(BaseTrainer):
             mode (str): train or inference. Defines which logging
                 rules to apply.
         """
-        # method to log data from you batch
-        # such as audio, text or images, for example
+        img_idx = 0
+        
+        lensless_img = batch["lensless"][img_idx].detach().cpu()
+        self.writer.add_image(f"{mode}/lensless_input", lensless_img)
+        
+        recon_img = torch.clamp(batch["reconstruction"][img_idx].detach().cpu(), 0.0, 1.0)
+        self.writer.add_image(f"{mode}/reconstruction", recon_img)
 
-        # logging scheme might be different for different partitions
-        if mode == "train":  # the method is called only every self.log_step steps
-            # Log Stuff
-            pass
-        else:
-            # Log Stuff
-            pass
+        if "lensed" in batch:
+            lensed_img = batch["lensed"][img_idx].detach().cpu()
+            self.writer.add_image(f"{mode}/lensed", lensed_img)
