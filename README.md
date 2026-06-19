@@ -1,6 +1,6 @@
 # Использование ADMM для реконструкции безлинзовых изображений
 
-В данном проекте реализованы методы реконструкции для датасета беслинзовых изображений [DigiCam-Mirflickr-MultiMask-10K](https://huggingface.co/datasets/bezzam/DigiCam-Mirflickr-MultiMask-10K). Были обучены несколько моделей: базовый ADMM с фиксированными параметрами, обучаемый LeADMM и модульные варианты LeADMM с пред- и постпроцессорами DRUNet.
+В данном проекте реализованы методы реконструкции для датасета безлинзовых изображений [DigiCam-Mirflickr-MultiMask-10K](https://huggingface.co/datasets/bezzam/DigiCam-Mirflickr-MultiMask-10K). Были обучены несколько моделей: базовый ADMM с фиксированными параметрами, обучаемый LeADMM и модульные варианты LeADMM с пред- и постпроцессорами DRUNet.
 
 ## Реализованные модели
 
@@ -65,7 +65,7 @@ python train.py model=modular_leadmm_5_pre_post
 | Modular LeADMM-5 Pre | [glebustim/modular_leadmm_5_pre](https://huggingface.co/glebustim/modular_leadmm_5_pre) | `checkpoint-epoch8.pth` |
 | Modular LeADMM-5 Post | [glebustim/modular_leadmm_5_post](https://huggingface.co/glebustim/modular_leadmm_5_post) | `checkpoint-epoch8.pth` |
 
-В ADMM-100 используются фиксированные гиперпараметры, поэтому чекпоинт не нужен. Обучаемый чекпоинт можно скачать в локальный каталог так:
+В ADMM-100 используются фиксированные гиперпараметры, поэтому чекпоинт не нужен. Обученный чекпоинт можно скачать в локальный каталог так:
 
 ```bash
 pip install huggingface_hub
@@ -98,7 +98,7 @@ python calculate_metrics.py --lensed_dir DigiCam-Mirflickr-MultiMask-10K/test/le
 
 ## Демонстрация
 
-[demo.ipynb](demo.ipynb) скачивает чекпоинт LeADMM-20, применяет препроцессинг проекта к тестовому примеру, выполняет реконструкцию и показывает беслинзовое измерение, реконструкцию и эталонное изображение.
+[demo.ipynb](demo.ipynb) скачивает чекпоинт Modular LeADMM-5 Pre, выполняет реконструкцию и показывает результаты, считает метрики при наличии оригинальных изображений в датасете.
 
 ## Результаты
 
