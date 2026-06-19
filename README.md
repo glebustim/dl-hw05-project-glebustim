@@ -104,7 +104,7 @@ python calculate_metrics.py --lensed_dir DigiCam-Mirflickr-MultiMask-10K/test/le
 
 Результаты `calculate_metrics.py` на тестовой выборке для каждой модели.
 
-| Модель | MSE | LPIPS | PSNR | SSIM | Время |
+| Модель | MSE | LPIPS | PSNR | SSIM | Время инференса |
 | --- | ---: | ---: | ---: | ---: | ---: |
 | ADMM-100 | 0.138174 | 0.759500 | 9.460061 | 0.205441 | 11:42 |
 | LeADMM-20 | 0.084329 | 0.802917 | 11.433484 | 0.344726 | 06:06 |
