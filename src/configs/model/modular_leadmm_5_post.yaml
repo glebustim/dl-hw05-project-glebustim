@@ -1,0 +1,9 @@
+_target_: src.model.ModularLeADMM
+num_iters: 5
+pre_channels: null
+post_channels: [32, 64, 128, 256]
+trainable: true
+mu_1_init: 1e-4
+mu_2_init: 1e-4
+mu_3_init: 1e-4
+tau_init: 2e-4

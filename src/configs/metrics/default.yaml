@@ -1,0 +1,23 @@
+device: "auto"
+train:
+  - _target_: src.metrics.MSEMetric
+  - _target_: src.metrics.LPIPSMetric
+    device: "auto"
+    net_type: "vgg"
+  - _target_: src.metrics.PSNRMetric
+    device: "auto"
+    data_range: 1.0
+  - _target_: src.metrics.SSIMMetric
+    device: "auto"
+    data_range: 1.0
+inference:
+  - _target_: src.metrics.MSEMetric
+  - _target_: src.metrics.LPIPSMetric
+    device: "auto"
+    net_type: "vgg"
+  - _target_: src.metrics.PSNRMetric
+    device: "auto"
+    data_range: 1.0
+  - _target_: src.metrics.SSIMMetric
+    device: "auto"
+    data_range: 1.0

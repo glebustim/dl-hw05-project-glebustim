@@ -1,0 +1,3 @@
+_target_: src.metrics.LPIPSMetric
+device: "auto"
+net_type: "vgg"

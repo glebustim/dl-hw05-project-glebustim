@@ -1,0 +1,37 @@
+defaults:
+  - model: modular_leadmm_5_pre_post
+  - writer: cometml
+  - metrics: default
+  - datasets: digicam
+  - dataloader: default
+  - transforms: default
+  - _self_
+
+optimizer:
+  _target_: torch.optim.AdamW
+  lr: 1e-4
+  weight_decay: 1e-4
+  betas: [0.9, 0.999]
+
+lr_scheduler:
+  _target_: torch.optim.lr_scheduler.CosineAnnealingLR
+  T_max: 7500
+  eta_min: 1e-6
+
+loss_function:
+  _target_: src.loss.MSELoss
+
+trainer:
+  log_step: 250
+  n_epochs: 6
+  epoch_len: null
+  device_tensors: ["lensless", "mask", "lensed"]
+  resume_from: null
+  device: auto
+  override: False
+  monitor: "off"
+  save_period: 1
+  early_stop: 6
+  save_dir: ${hydra:runtime.choices.model}
+  skip_oom: false
+  seed: 42

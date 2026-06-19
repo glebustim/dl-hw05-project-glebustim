@@ -1,0 +1,11 @@
+train:
+  _target_: src.datasets.DigicamDataset
+  data_dir: DigiCam-Mirflickr-MultiMask-10K
+  split: train
+  instance_transforms: ${transforms.instance_transforms.train}
+
+test:
+  _target_: src.datasets.DigicamDataset
+  data_dir: DigiCam-Mirflickr-MultiMask-10K
+  split: test
+  instance_transforms: ${transforms.instance_transforms.inference}
