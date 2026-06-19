@@ -13,3 +13,8 @@ waveprop
 black
 isort
 pre-commit
+scipy
+Pillow
+huggingface_hub
+datasets
+gdown
