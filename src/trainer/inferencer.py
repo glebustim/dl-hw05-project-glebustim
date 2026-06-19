@@ -148,32 +148,22 @@ class Inferencer(BaseTrainer):
 
     @staticmethod
     def _crop_reconstruction_for_saving(image, target):
-        crop_height, crop_width = Inferencer._target_crop_size(target)
-        return Inferencer._center_crop(image, crop_height, crop_width)
+        top, bottom, left, right = Inferencer._target_crop_bounds(target)
+        return image[..., top:bottom, left:right]
 
     @staticmethod
-    def _target_crop_size(target):
+    def _target_crop_bounds(target):
         content_mask = target.abs().sum(dim=0) > 0
         if content_mask.any():
             content_coords = content_mask.nonzero()
             top = content_coords[:, 0].min().item()
-            bottom = content_coords[:, 0].max().item()
+            bottom = content_coords[:, 0].max().item() + 1
             left = content_coords[:, 1].min().item()
-            right = content_coords[:, 1].max().item()
-            return bottom - top + 1, right - left + 1
+            right = content_coords[:, 1].max().item() + 1
+            return top, bottom, left, right
 
-        return target.shape[-2:]
-
-    @staticmethod
-    def _center_crop(image, crop_height, crop_width):
-        image_height, image_width = image.shape[-2:]
-        crop_top = (image_height - crop_height) // 2
-        crop_left = (image_width - crop_width) // 2
-        return image[
-            ...,
-            crop_top:crop_top + crop_height,
-            crop_left:crop_left + crop_width,
-        ]
+        height, width = target.shape[-2:]
+        return 0, height, 0, width
 
     def _inference_part(self, part, dataloader):
         """
