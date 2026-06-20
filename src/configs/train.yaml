@@ -15,15 +15,15 @@ optimizer:
 
 lr_scheduler:
   _target_: torch.optim.lr_scheduler.CosineAnnealingLR
-  T_max: 7500
+  T_max: 17000
   eta_min: 1e-6
 
 loss_function:
   _target_: src.loss.MSELoss
 
 trainer:
-  log_step: 250
-  n_epochs: 6
+  log_step: 425
+  n_epochs: 8
   epoch_len: null
   device_tensors: ["lensless", "mask", "lensed"]
   resume_from: null
@@ -31,7 +31,7 @@ trainer:
   override: False
   monitor: "off"
   save_period: 1
-  early_stop: 6
+  early_stop: 8
   save_dir: ${hydra:runtime.choices.model}
   skip_oom: false
   seed: 42
